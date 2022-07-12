@@ -1,7 +1,7 @@
 import random
 
 
-class Priesai():
+class Priesai:
     def __init__(self, health, max_health):
         self.health = health
         self.max_health = max_health
@@ -63,6 +63,10 @@ class Weapon:
         self.weapon_name = weapon_name
         self.weapon_dmg = weapon_dmg
 
+    def do_atk(self, owner, target):
+        owner.get_recovered(5)
+        target.get_damaged(5)
+
 
 class Player(Priesai):
     def __init__(self, health, max_health):
@@ -72,7 +76,8 @@ class Player(Priesai):
     def get_weapon(self, weapon_name, weapon_dmg):
         self.weapon = Weapon(weapon_name, weapon_dmg)
 
-    def action(self):
+    def action(self, target):
+        self.weapon.do_atk(self, target)
         print(f"Using a {self.weapon.weapon_name} for {self.weapon.weapon_dmg}")
         return self.weapon.weapon_dmg
 
@@ -103,9 +108,11 @@ class Game:
             print(f"{knight} {self.knights[knight]}")
         selection = [input("Attack archer or knight? (type knight/archer) "), int(input("which one? (enter id) "))]
         if selection[0] == "archer":
-            self.archers[selection[1]].get_damaged(self.player.action())
+            target = self.archers[selection[1]]
+
         elif selection[0] == "knight":
-            self.knights[selection[1]].get_damaged(self.player.action())
+            target = self.knights[selection[1]]
+        self.player.action(target)
         # enemy turn
         for archer in range(self.number_of_archers):
             self.player.get_damaged(self.archers[archer].action())
